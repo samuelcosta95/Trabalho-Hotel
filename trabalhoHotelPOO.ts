@@ -18,13 +18,13 @@ class Cliente{
 
         if (quarto) {
             if (!quarto.getOcupado) {
-                const reserva = new Reserva(dias,quarto)
+                const reserva = new Reserva(dias,quarto,this.nome)
                 quarto.addReserva(reserva)
                 quarto.ocupar()
                 console.log(`Reserva realizada para ${this.nome} no quarto ${numeroQuarto} por ${dias} dias.`)
                 
             } else {
-                console.log(`O quarto ${numeroQuarto} está ocupado.`)
+                throw new Error(`O quarto ${numeroQuarto} está ocupado.`)
             }
         } else {
             throw new Error('Quarto não encontrado')
@@ -107,6 +107,11 @@ class QuartoStandard extends Quarto{
         super(numero,precoDiaria)
         this.tipoCama = tipoCama
     }
+
+    toString(): string{
+        let msg = this.ocupado? "ocupado": "livre"
+        return `Quarto: ${this.numero}\nTipo: quarto premium\nStatus: ${msg}\nTipo da cama: ${this.tipoCama}\nValor da diária: ${this.precoDiaria}`
+    }
 }
 
 class GerenciadorDeHotel{
@@ -138,11 +143,25 @@ class GerenciadorDeHotel{
         }
         return quartoDisponivel
     }
+
 }
 
 class Servico{
     private tipo: string
-    private tempoDeServico: number
+    private taxaAdicional: number
+
+    constructor(tipo: string,taxaAdicional: number){
+        this.tipo = tipo
+        this.taxaAdicional = taxaAdicional
+    }
+
+    get getTipo() {
+        return this.tipo
+    }
+
+    get getTaxa() {
+        return this.taxaAdicional
+    }
 
 }
 
@@ -150,23 +169,25 @@ class Reserva{
     private precoTotal: number 
     private dias: number
     private quarto: Quarto
+    private nomeCliente: string
 
-
-    constructor(dias:number,quarto:Quarto){
+    constructor(dias:number,quarto:Quarto,nomeCliente:string){
         this.dias = dias
         this.quarto = quarto
         this.precoTotal = dias * quarto.getDiaria
+        this.nomeCliente = nomeCliente
     }
     
     toString():string{
-        return `Reserva do quarto ${this.quarto.toString()} de ${this.dias} dias custou ${this.precoTotal}R$`
+        return `Reserva realizada por ${this.nomeCliente} do quarto ${this.quarto.toString()} \n${this.dias} dias: ${this.precoTotal}R$`
     }
 
 }
 
 const cliente1 = new Cliente("Jose","123.456.654-12","M","86 947242101","rua canga")
 const cliente2 = new Cliente("Maria","321.555.877-77","F","86 879817455","Rua Palmares")
-const suiteMaster = new QuartoPremium(123,150,2)
+const suiteMaster = new QuartoPremium(123,250,2)
+const quartoSolteiro = new QuartoStandard(171,110,"solteiro")
 const gerenciadorHotel = new GerenciadorDeHotel()
 gerenciadorHotel.adicionarQuarto(suiteMaster)
 cliente1.reservar(5,123,gerenciadorHotel)
