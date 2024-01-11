@@ -21,6 +21,8 @@ class Cliente{
                 const reserva = new Reserva(dias,quarto,this.nome)
                 quarto.addReserva(reserva)
                 quarto.ocupar()
+                reserva.adicionarServico(massagem)
+                reserva.totalServicos()
                 console.log(`Reserva realizada para ${this.nome} no quarto ${numeroQuarto} por ${dias} dias.`)
                 
             } else {
@@ -30,6 +32,7 @@ class Cliente{
             throw new Error('Quarto não encontrado')
         }
     }    
+
 
 }
 
@@ -166,32 +169,61 @@ class Servico{
 }
 
 class Reserva{
+    private servicos: Servico []
     private precoTotal: number 
     private dias: number
     private quarto: Quarto
     private nomeCliente: string
+    
 
     constructor(dias:number,quarto:Quarto,nomeCliente:string){
+        this.servicos = []
         this.dias = dias
         this.quarto = quarto
-        this.precoTotal = dias * quarto.getDiaria
         this.nomeCliente = nomeCliente
+
+        this.precoTotal = dias * quarto.getDiaria
+        this.precoTotal += this.totalServicos()
+    
     }
     
     toString():string{
         return `Reserva realizada por ${this.nomeCliente} do quarto ${this.quarto.toString()} \n${this.dias} dias: ${this.precoTotal}R$`
     }
 
+    adicionarServico(servico:Servico): void{
+        this.servicos.push(servico)
+        this.precoTotal += servico.getTaxa
+    }
+
+    totalServicos():number{
+        let saida: number = 0
+        for (const servico of this.servicos) {
+            saida += servico.getTaxa
+            
+        }
+        return saida
+    }
+
 }
 
 const cliente1 = new Cliente("Jose","123.456.654-12","M","86 947242101","rua canga")
 const cliente2 = new Cliente("Maria","321.555.877-77","F","86 879817455","Rua Palmares")
+
 const suiteMaster = new QuartoPremium(123,250,2)
 const quartoSolteiro = new QuartoStandard(171,110,"solteiro")
+
 const gerenciadorHotel = new GerenciadorDeHotel()
+
+const lavanderia = new Servico("lavanderia", 50)
+const massagem = new Servico("massagem", 95)
+
 gerenciadorHotel.adicionarQuarto(suiteMaster)
+gerenciadorHotel.adicionarQuarto(quartoSolteiro)
+
 cliente1.reservar(5,123,gerenciadorHotel)
 suiteMaster.liberar()
+
 cliente2.reservar(2,123,gerenciadorHotel)
 console.log(suiteMaster.listarReservas())
 
