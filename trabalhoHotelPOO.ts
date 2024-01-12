@@ -22,7 +22,7 @@ class Cliente{
                 quarto.addReserva(reserva)
                 quarto.ocupar()
                 reserva.adicionarServico(massagem)
-                reserva.totalServicos()
+                reserva.adicionarServico(lavanderia)
                 console.log(`Reserva realizada para ${this.nome} no quarto ${numeroQuarto} por ${dias} dias.`)
                 
             } else {
@@ -63,7 +63,7 @@ class Quarto{
 
     toString(): string{
         let msg = this.ocupado? "ocupado": "livre"
-        return `Quarto: ${this.numero},\nStatus: ${msg}\nValor da diária: ${this.precoDiaria}`
+        return `Quarto: ${this.numero},\nStatus: ${msg}\nValor da diária: ${this.precoDiaria}R$`
     }
 
     addReserva(reserva:Reserva):void{
@@ -99,7 +99,7 @@ class QuartoPremium extends Quarto{
 
     toString(): string{
         let msg = this.ocupado? "ocupado": "livre"
-        return `Quarto: ${this.numero}\nTipo: quarto premium\nStatus: ${msg}\nQuantidade de frigobar: ${this.qntFrigobar}\nValor da diária: ${this.precoDiaria}`
+        return `Quarto: ${this.numero}\nTipo: quarto premium\nStatus: ${msg}\nQuantidade de frigobar: ${this.qntFrigobar}\nValor da diária: ${this.precoDiaria}R$`
     }
 }
 
@@ -113,7 +113,7 @@ class QuartoStandard extends Quarto{
 
     toString(): string{
         let msg = this.ocupado? "ocupado": "livre"
-        return `Quarto: ${this.numero}\nTipo: quarto premium\nStatus: ${msg}\nTipo da cama: ${this.tipoCama}\nValor da diária: ${this.precoDiaria}`
+        return `Quarto: ${this.numero}\nTipo: quarto premium\nStatus: ${msg}\nTipo da cama: ${this.tipoCama}\nValor da diária: ${this.precoDiaria}R$`
     }
 }
 
@@ -166,6 +166,10 @@ class Servico{
         return this.taxaAdicional
     }
 
+    toString(): string{
+        return `Serviço ${this.tipo}: ${this.taxaAdicional}R$\n`
+    }
+
 }
 
 class Reserva{
@@ -188,7 +192,7 @@ class Reserva{
     }
     
     toString():string{
-        return `Reserva realizada por ${this.nomeCliente} do quarto ${this.quarto.toString()} \n${this.dias} dias: ${this.precoTotal}R$`
+        return `Reserva realizada por ${this.nomeCliente} do quarto ${this.quarto.toString()} \n${this.listarServicos()}Total dias: ${this.dias}\nPreço total: ${this.precoTotal}R$`
     }
 
     adicionarServico(servico:Servico): void{
@@ -205,10 +209,19 @@ class Reserva{
         return saida
     }
 
+    listarServicos():string{
+        let saida: string = ''
+        for (const servico of this.servicos) {
+            saida += servico.toString()
+            
+        }
+        return saida
+    }
+
 }
 
-const cliente1 = new Cliente("Jose","123.456.654-12","M","86 947242101","rua canga")
-const cliente2 = new Cliente("Maria","321.555.877-77","F","86 879817455","Rua Palmares")
+const cliente1 = new Cliente("José","123.456.654-12","M","86 947242101","Rua Belém")
+const cliente2 = new Cliente("Maria","321.555.877-77","F","86 879817455","Rua Pará")
 
 const suiteMaster = new QuartoPremium(123,250,2)
 const quartoSolteiro = new QuartoStandard(171,110,"solteiro")
@@ -226,4 +239,8 @@ suiteMaster.liberar()
 
 cliente2.reservar(2,123,gerenciadorHotel)
 console.log(suiteMaster.listarReservas())
+
+cliente1.reservar(2,171,gerenciadorHotel)
+console.log(quartoSolteiro.toString())
+
 
